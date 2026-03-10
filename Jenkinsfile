@@ -58,7 +58,7 @@ pipeline {
 
     stage('Levantar Imagen Docker') {
       steps {
-        sh 'docker build -t hola-jenkins-image .'
+        sh 'docker build -t hola-jenkins-image ./app'
       }
     }
 
@@ -71,6 +71,32 @@ pipeline {
     stage('Levantar contenedor') {
       steps {
         sh 'docker run -d -p 8081:80 --name hola-jenkins-container hola-jenkins-image'
+      }
+    }
+
+    stage('Verificar Contenedor') {
+      steps {
+        sh '''
+          set -e
+
+          URL="http://localhost:8081"
+
+          echo "================================="
+          echo "Contenedor desplegado en:"
+          echo $URL
+          echo "================================="
+
+          echo "Esperando que el contenedor levante..."
+
+          sleep 5
+
+          if curl -s $URL | grep -q "hola-mundo"; then
+            echo "OK: Aplicación responde correctamente"
+          else
+            echo "ERROR: La aplicación no respondió correctamente"
+            exit 1
+          fi
+        '''
       }
     }
 
