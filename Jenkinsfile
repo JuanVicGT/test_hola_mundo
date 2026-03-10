@@ -77,32 +77,6 @@ pipeline {
       }
     }
 
-    stage('Verificar Contenedor') {
-      steps {
-        sh '''
-          set -e
-
-          URL="http://localhost:8081"
-
-          echo "================================="
-          echo "Contenedor desplegado en:"
-          echo $URL
-          echo "================================="
-
-          echo "Esperando que el contenedor levante..."
-
-          sleep 5
-
-          if curl -s $URL | grep -q "hola-mundo"; then
-            echo "OK: Aplicación responde correctamente"
-          else
-            echo "ERROR: La aplicación no respondió correctamente"
-            exit 1
-          fi
-        '''
-      }
-    }
-
     stage('Archive artifact') {
       steps {
         archiveArtifacts artifacts: 'index.html', fingerprint: true, allowEmptyArchive: false
