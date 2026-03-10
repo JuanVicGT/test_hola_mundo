@@ -79,7 +79,7 @@ pipeline {
 
     stage('Archive artifact') {
       steps {
-        archiveArtifacts artifacts: 'index.html', fingerprint: true, allowEmptyArchive: false
+        archiveArtifacts artifacts: 'app/index.html', fingerprint: true, allowEmptyArchive: false
       }
     }
   }
