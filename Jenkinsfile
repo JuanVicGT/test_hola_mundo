@@ -26,6 +26,8 @@ pipeline {
       steps {
         sh '''
           set -e
+          cd app
+
           test -f index.html
           echo "OK: index.html existe"
           echo "Preview:"
@@ -38,6 +40,7 @@ pipeline {
       steps {
         sh '''
           set -e
+          cd app
 
           if grep -q "<title>hola-mundo</title>" index.html; then
             echo "OK: title correcto"
