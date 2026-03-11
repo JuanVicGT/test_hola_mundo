@@ -61,7 +61,10 @@ pipeline {
 
     stage('Levantar Imagen Docker') {
       steps {
-        sh 'docker build -t hola-jenkins-image ./app'
+        sh '''
+          IMAGE_TAG=hola-jenkins-image:${BUILD_NUMBER}
+          docker build -t $IMAGE_TAG ./app
+        '''
       }
     }
 
@@ -73,7 +76,14 @@ pipeline {
 
     stage('Levantar contenedor') {
       steps {
-        sh 'docker run -d -p 8081:80 --name hola-jenkins-container hola-jenkins-image'
+        sh '''
+          IMAGE_TAG=hola-jenkins-image:${BUILD_NUMBER}
+
+          docker run -d \
+            -p 8081:80 \
+            --name hola-jenkins-container \
+            $IMAGE_TAG
+        '''
       }
     }
 
