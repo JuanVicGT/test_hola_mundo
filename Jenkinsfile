@@ -26,6 +26,8 @@ pipeline {
       steps {
         sh '''
           set -e
+          cd app
+
           test -f index.html
           echo "OK: index.html existe"
           echo "Preview:"
@@ -38,6 +40,7 @@ pipeline {
       steps {
         sh '''
           set -e
+          cd app
 
           if grep -q "<title>hola-mundo</title>" index.html; then
             echo "OK: title correcto"
@@ -58,7 +61,10 @@ pipeline {
 
     stage('Levantar Imagen Docker') {
       steps {
-        sh 'docker build -t hola-jenkins-image .'
+        sh '''
+          IMAGE_TAG=hola-jenkins-image:${BUILD_NUMBER}
+          docker build -t $IMAGE_TAG ./app
+        '''
       }
     }
 
@@ -70,13 +76,20 @@ pipeline {
 
     stage('Levantar contenedor') {
       steps {
-        sh 'docker run -d -p 8081:80 --name hola-jenkins-container hola-jenkins-image'
+        sh '''
+          IMAGE_TAG=hola-jenkins-image:${BUILD_NUMBER}
+
+          docker run -d \
+            -p 8081:80 \
+            --name hola-jenkins-container \
+            $IMAGE_TAG
+        '''
       }
     }
 
     stage('Archive artifact') {
       steps {
-        archiveArtifacts artifacts: 'index.html', fingerprint: true, allowEmptyArchive: false
+        archiveArtifacts artifacts: 'app/index.html', fingerprint: true, allowEmptyArchive: false
       }
     }
   }
